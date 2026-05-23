@@ -839,9 +839,7 @@ body:before {
 .case-media-grid {
   position: relative;
   z-index: 2;
-  background: var(--col-bg-translucent);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
+  background: var(--col-bg);
   padding: max(30px, 4.5rem) var(--gutter);
   border-top: 1px solid var(--border-color);
   flex-direction: column;
@@ -884,9 +882,7 @@ body:before {
 .case-footer {
   position: relative;
   z-index: 2;
-  background: var(--col-bg-translucent);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
+  background: var(--col-bg);
   padding: max(40px, 6rem) var(--gutter);
   border-top: 1px solid var(--border-color);
   text-align: center;

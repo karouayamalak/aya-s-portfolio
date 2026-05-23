@@ -42,7 +42,10 @@ const projects: Project[] = [
     collaborators: [{ label: 'ESTIN 2CP Team', url: 'https://github.com/prj-2cp' }],
     visitUrl: 'https://thazdayth.vercel.app',
     githubUrl: 'https://github.com/prj-2cp/thazdayth.git',
-    media: [{ type: 'video', src: '/thazdayth-record.mp4' }],
+    media: [
+      { type: 'video', src: '/thazdayth-record.mp4' },
+      { type: 'image', src: '/Screenshot 2026-05-22 234317.png' },
+    ],
     nextProject: 'Veto Care'
   },
   {
@@ -56,7 +59,10 @@ const projects: Project[] = [
     about: 'An information system project designed for veterinary clinics and pet care management. Built using React and TypeScript on the frontend, with Supabase powering the database and backend services to ensure secure, real-time data handling.',
     visitUrl: 'https://veto-care-2f5d.vercel.app',
     githubUrl: 'https://github.com/estinaya2024/Veto-care.git',
-    media: [{ type: 'video', src: '/vetocare-record.mp4' }],
+    media: [
+      { type: 'video', src: '/vetocare-record.mp4' },
+      { type: 'image', src: '/description-veto-care-page.jpg' },
+    ],
     nextProject: 'Focusly'
   },
   {
@@ -70,7 +76,10 @@ const projects: Project[] = [
     about: 'A productivity-oriented web platform designed to help users achieve their daily targets. It combines a robust, interactive Todo list with an integrated selection of ambient focus sounds to enhance deep work and minimize distraction.',
     visitUrl: 'https://focusly-mnw4-ten.vercel.app/',
     githubUrl: 'https://github.com/estinaya2024/focusly.git',
-    media: [{ type: 'image', src: '/focuslyproject.png' }],
+    media: [
+      { type: 'image', src: '/focuslyproject.png' },
+      { type: 'image', src: '/descriptive-focusly.png' },
+    ],
     nextProject: 'Duxel'
   },
   {
@@ -84,7 +93,10 @@ const projects: Project[] = [
     about: 'A color palette tool built for generating and exploring design themes. You can upload any image to extract dominant colors and map them to design roles (primary, secondary, accent, etc.), or search by color name, hex, RGB, or CMYK. Features live previews across 4 mockup layouts (landing page, dashboard, mobile app, and product grid), alongside a dark mode generator, undo/redo history, palette saving, and exporting as CSS, JSON, or SVG.',
     visitUrl: 'https://duxel-j374.vercel.app',
     githubUrl: 'https://github.com/estinaya2024/Duxel.git',
-    media: [{ type: 'video', src: '/Duxel-record.mp4' }],
+    media: [
+      { type: 'video', src: '/Duxel-record.mp4' },
+      { type: 'image', src: '/duxel-discription.png' },
+    ],
     nextProject: 'Thazdayth'
   }
 ];
@@ -155,6 +167,39 @@ function CaseVideoPlayer({ src }: { src: string }) {
       className="case-media-asset"
       style={{ display: 'block', width: '100%', height: '100%' }}
     />
+  );
+}
+
+/* =============================================
+   SCROLL-REVEAL MEDIA FIGURE (jobenetuk-style)
+   ============================================= */
+function CaseMediaFigure({ item }: { item: MediaItem }) {
+  const figRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = figRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('case-media-revealed');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.12 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <figure ref={figRef} className="case-media-item">
+      {item.type === 'video' ? (
+        <CaseVideoPlayer src={item.src} />
+      ) : (
+        <img src={item.src} alt="" className="case-media-asset" draggable={false} />
+      )}
+    </figure>
   );
 }
 
@@ -368,7 +413,12 @@ function App() {
             onClick={() => setIsDark((prev) => !prev)}
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            <img src="/theme-blue.svg" alt="theme toggle" width="16" height="16" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" className="theme-toggle-icon" style={{ width: 'max(14px, 1.6rem)', height: 'max(14px, 1.6rem)' }}>
+              <path d="M12 2 A10 10 0 0 1 12 22 Z" fill="currentColor"/>
+              <path d="M12 2 A10 10 0 0 0 12 22 Z" fill="currentColor" opacity="0.2"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
           </button>
         </div>
         <div className="header-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.2rem' }}>
@@ -526,13 +576,7 @@ function App() {
         {selectedProject?.media && selectedProject.media.length > 0 && (
           <div className="case-media-grid">
             {selectedProject.media.map((mediaItem, idx) => (
-              <figure key={idx} className="case-media-item">
-                {mediaItem.type === 'video' ? (
-                  <CaseVideoPlayer src={mediaItem.src} />
-                ) : (
-                  <img src={mediaItem.src} alt="" className="case-media-asset" />
-                )}
-              </figure>
+              <CaseMediaFigure key={`${selectedProject.name}-${idx}`} item={mediaItem} />
             ))}
           </div>
         )}

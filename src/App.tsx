@@ -204,6 +204,24 @@ function CaseMediaFigure({ item }: { item: MediaItem }) {
 }
 
 /* =============================================
+   HELPER FOR MOBILE BADGES
+   ============================================= */
+const getProjectBadge = (name: string) => {
+  switch (name) {
+    case 'Thazdayth':
+      return <div className="mobile-card-dot blue-dot" />;
+    case 'Veto Care':
+      return <div className="mobile-card-dot teal-dot" />;
+    case 'Focusly':
+      return <div className="mobile-card-dot purple-dot" />;
+    case 'Duxel':
+      return <div className="mobile-card-dot orange-dot" />;
+    default:
+      return null;
+  }
+};
+
+/* =============================================
    MAIN APP COMPONENT
    ============================================= */
 function App() {
@@ -213,11 +231,36 @@ function App() {
 
   const [showAbout, setShowAbout] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [time, setTime] = useState('');
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(true);
+  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const cards = document.querySelectorAll('.mobile-project-card');
+    if (cards.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0', 10);
+            setActiveCardIndex(index);
+          }
+        });
+      },
+      {
+        rootMargin: '-30% 0px -30% 0px',
+        threshold: 0.45,
+      }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [showMobileMenu, showDetail]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -401,6 +444,7 @@ function App() {
         <div className="header-left">
           <div className="header-brand">
             <a href="/" className="logo">AYA KAROU</a>
+            <span className="mobile-avail">Studying @ ESTIN ↗</span>
           </div>
           <button id="contact-btn" className="nav-link" onClick={() => setShowContact(true)}>
             Contact
@@ -426,6 +470,9 @@ function App() {
           <p className="clock">Bouira, Algeria</p>
           <span className="availability">Studying in ESTIN Bejaia ↗</span>
         </div>
+        <button className="mobile-menu-btn" onClick={() => setShowMobileMenu(true)}>
+          Menu
+        </button>
       </header>
 
       <main className="layout">
@@ -464,6 +511,40 @@ function App() {
               </div>
             ))}
           </div>
+        </div>
+        {/* Mobile vertical project list */}
+        <div className="mobile-hero">
+          <h1 className="mobile-hero-title">Aya Karou</h1>
+          <p className="mobile-hero-subtitle">
+            Frontend developer studying Computer Science at ESTIN, specializing in building high-quality, motion-rich, and polished web experiences.
+          </p>
+          <div className="mobile-hero-foot">
+            <span className="mobile-hero-tag">Studying @ ESTIN</span>
+            <span className="mobile-scroll-hint">Explore Work ↓</span>
+          </div>
+        </div>
+
+        <div className="mobile-projects-list">
+          {projects.map((project, idx) => (
+            <div
+              key={idx}
+              className={`mobile-project-card${activeCardIndex === idx ? ' is-active' : ''}`}
+              data-index={idx}
+              onClick={() => openProject(project)}
+            >
+              {getProjectBadge(project.name)}
+              <img
+                src={project.img}
+                alt={project.name}
+                className="mobile-project-img"
+                draggable={false}
+              />
+              <div className="mobile-project-label">
+                <span className="mobile-project-name">{project.name}</span>
+                <span className="mobile-project-year">{project.year}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
 
@@ -730,6 +811,38 @@ function App() {
           </div>
         </div>
       </section>
+
+      {/* ── Mobile Menu Overlay ── */}
+      <div className={`mobile-menu-overlay${showMobileMenu ? ' active' : ''}`}>
+        <div className="mobile-menu-header">
+          <a href="/" className="mobile-menu-logo">AYA KAROU</a>
+          <button className="mobile-menu-close" onClick={() => setShowMobileMenu(false)}>
+            Close
+          </button>
+        </div>
+        <nav className="mobile-menu-nav">
+          <button
+            className="mobile-menu-link"
+            style={{ '--nav-idx': 1 } as React.CSSProperties}
+            onClick={() => { setShowAbout(true); setShowMobileMenu(false); }}
+          >
+            <span>About</span>
+            <span className="mobile-menu-arrow">↗</span>
+          </button>
+          <button
+            className="mobile-menu-link"
+            style={{ '--nav-idx': 2 } as React.CSSProperties}
+            onClick={() => { setShowContact(true); setShowMobileMenu(false); }}
+          >
+            <span>Contact</span>
+            <span className="mobile-menu-arrow">↗</span>
+          </button>
+        </nav>
+        <div className="mobile-menu-foot">
+          <p className="mobile-menu-location">Bouira, Algeria</p>
+          <p className="mobile-menu-time">{time}</p>
+        </div>
+      </div>
     </>
   );
 }
